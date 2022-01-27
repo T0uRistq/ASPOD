@@ -1,5 +1,6 @@
 package com.example.energoplanshet;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -34,26 +35,14 @@ public class BuildDoc extends AppCompatActivity {
         spinner = findViewById(R.id.you_spin_me);
         db = FirebaseDatabase.getInstance().getReference();
         List<String> tools = getData();
-//        TODO: build arrayAdapter by iteration children in users folder
-        assert(!tools.isEmpty());
-//        ArrayAdapter arrayAdapter = new ArrayAdapter(this, R.layout.activity_doc, tools);
-//        spinner.setAdapter(arrayAdapter);
+        ArrayAdapter<CharSequence> arrayAdapter = ArrayAdapter.createFromResource(this, R.array.tools_temp, android.R.layout.simple_spinner_item);
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(arrayAdapter);
     }
 
     public List<String> getData() {
         List<String> list = new ArrayList<>();
-        db.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                TODO: make a correct query for immediate children of root (users folder in future)
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-//                    list.add(ds.getKey());
-                    Log.d("deb", ds.getKey());
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) { }
-        });
+//        TODO: fill list with tool_names
         return list;
     }
 

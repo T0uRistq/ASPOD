@@ -4,8 +4,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -40,7 +43,9 @@ public class MainActivity extends AppCompatActivity {
 
     DatabaseReference db;
     EditText et_login, et_pass;
+    static String SQL_USERS, SQL_TOOLS, SQL_LEVEL;
     Context context;
+    TableReaderHelper dbHelper;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -50,11 +55,32 @@ public class MainActivity extends AppCompatActivity {
         et_pass = findViewById(R.id.pass);
         context = getApplicationContext();
         db = FirebaseDatabase.getInstance().getReference();
+        SQL_USERS =  "CREATE TABLE MAINTABLE  (ID INTEGER PRIMARY KEY," +
+                "FULLNAME TEXT)";
+//        TODO: add tools database
+//        SQL_TOOLS =  "CREATE TABLE TOOLS (TOOL_NAME TEXT)";
+        SQL_LEVEL = "CREATE TABLE LEVEL (" +
+                "ID INTEGER VIK TEXT UK TEXT, MK TEXT," +
+                " PVK TEXT, PVT TEXT, VD TEXT, VK TEXT, RK TEXT," +
+                " AU TEXT, KI,HZ TEXT, MKNDS TEXT, VIKNDS TEXT, VIK TEXT," +
+                " FIRMNESS TEXT, GEODEZY TEXT, OPTI TEXT, PTM TEXT, OT TEXT," +
+                " AB TEXT, PB TEXT, HEIGHTWORK TEXT," +
+                "FOREIGN KEY (ID) REFERENCES MAINTABLE (ID))";
+        dbHelper = new TableReaderHelper(context);
+
     }
 
     public void enter(View view) {
         String login = et_login.getText().toString();
         String pass = et_pass.getText().toString();
+        SQLiteDatabase database = dbHelper.getReadableDatabase();
+        Cursor cursor = database.rawQuery("SELECT FULLNAME FROM MAINTABLE WHERE FULLNAME LIKE '" + login + "'",null);
+        if (cursor.moveToFirst()) {
+            Intent i = new Intent(this,BuildDoc.class);
+            startActivity(i);
+        } else {
+            Toast.makeText(this,"Неверный логин или пароль",Toast.LENGTH_LONG).show();
+        }
     }
 
     public long getAppVersion() {
@@ -110,7 +136,14 @@ public class MainActivity extends AppCompatActivity {
                 if (remoteVersion == getAppVersion()) {
                     Toast.makeText(context, "У вас уже последняя версия БД", Toast.LENGTH_SHORT).show();
                 } else {
-//                    TODO: update local json files
+                    SQLiteDatabase database = dbHelper.getWritableDatabase();
+                    int id = 0;
+                    ContentValues values = new ContentValues();
+                    for (DataSnapshot data : dataSnapshot.child("users").getChildren()) {
+                        values.put("ID", id++);
+                        values.put("FULLNAME", data.getKey());
+                        database.insert("MAINTABLE", null, values);
+                    }
                     setAppVersion(remoteVersion);
                     Toast.makeText(context, "Обновлено", Toast.LENGTH_SHORT).show();
                 }
