@@ -12,8 +12,8 @@ public class TableReaderHelper extends SQLiteOpenHelper {
     }
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(MainActivity.SQL_USERS);
-//        db.execSQL(MainActivity.SQL_TOOLS);
-        db.execSQL(MainActivity.SQL_LEVEL);
+        db.execSQL(MainActivity.SQL_TOOLS);
+//        db.execSQL(MainActivity.SQL_LEVEL);
     }
 
     @Override
