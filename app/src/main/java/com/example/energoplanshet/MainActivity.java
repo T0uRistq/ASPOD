@@ -7,13 +7,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -26,21 +24,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Properties;
-import java.util.Scanner;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -82,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
         String login = et_login.getText().toString();
         String pass = et_pass.getText().toString();
         user_id = "0";
-        Intent i = new Intent(this,BuildDoc.class);
+        Intent i = new Intent(this, StepTools.class);
         startActivity(i);
 //        SQLiteDatabase database = dbHelper.getReadableDatabase();
 //        Cursor cursor = database.rawQuery("SELECT * FROM MAINTABLE WHERE FULLNAME LIKE '" + login + "'",null);

@@ -21,8 +21,21 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".BuildDoc"
+        <activity android:name=".StepTools"
             android:parentActivityName=".MainActivity" />
+
+        <activity android:name=".StepOetolpfse"
+            android:parentActivityName=".MainActivity" />
+
+        <activity android:name=".StepEto"
+            android:parentActivityName=".MainActivity" />
+
+        <activity android:name=".StepSseto"
+            android:parentActivityName=".MainActivity" />
+
+        <activity android:name=".StepConclusion"
+            android:parentActivityName=".MainActivity" />
+
     </application>
 
 </manifest>

@@ -1,6 +1,5 @@
 package com.example.energoplanshet;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -10,25 +9,17 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
 
-public class BuildDoc extends AppCompatActivity {
+public class StepTools extends AppCompatActivity {
 
     Spinner spinner;
     TableReaderHelper dbHelper;
@@ -40,7 +31,7 @@ public class BuildDoc extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_doc);
+        setContentView(R.layout.activity_tools);
         spinner = findViewById(R.id.you_spin_me);
         zavod = findViewById(R.id.zavod);
         svid = findViewById(R.id.svid);
@@ -50,7 +41,8 @@ public class BuildDoc extends AppCompatActivity {
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item);
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         dbHelper = new TableReaderHelper(this);
-        db = FirebaseDatabase.getInstance().getReference().child("protocol").child(MainActivity.user_id);
+        assert (MainActivity.user_id != null);
+        db = FirebaseDatabase.getInstance().getReference().child("protocol").child(MainActivity.user_id).child("tools");
         SQLiteDatabase database = dbHelper.getReadableDatabase();
         cursor = database.rawQuery("SELECT * FROM TOOLS", null);
         Log.d("olboeb", "cnt is " + cursor.getCount());
@@ -73,19 +65,20 @@ public class BuildDoc extends AppCompatActivity {
         });
     }
 
-    public void send(View view) {
+    public void next(View view) {
         String json = "";
         for (int i = 0; i < arrayList.size(); i++) {
-            json += "\"" + (i % 4) + "\" : \"" + arrayList.get(i) + "\", ";
+            json += "\"c" + (i % 4) + "\" : \"" + arrayList.get(i) + "\", ";
             if (i % 4 == 3) {
                 db.child("" + i / 4).setValue(json.substring(0, json.length() - 2));
                 json = "";
             }
         }
-        finish();
+        Intent i = new Intent(this, StepOetolpfse.class);
+        startActivity(i);
     }
 
-    public void next(View view) {
+    public void back(View view) {
         finish();
     }
 
