@@ -31,7 +31,7 @@ import java.io.InputStreamReader;
 
 public class MainActivity extends AppCompatActivity {
 
-    DatabaseReference db;
+    static DatabaseReference db;
     EditText et_login, et_pass;
     static String SQL_USERS, SQL_TOOLS, SQL_T0, SQL_T1, SQL_T2, SQL_T3, SQL_T4;
     Context context;
@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         et_pass = findViewById(R.id.pass);
         context = getApplicationContext();
         db = FirebaseDatabase.getInstance().getReference();
-        SQL_USERS =  "CREATE TABLE MAINTABLE  (ID INTEGER PRIMARY KEY," +
+        SQL_USERS =  "CREATE TABLE USERS  (ID INTEGER PRIMARY KEY," +
                 "FULLNAME TEXT)";
 //        TODO: give appropriate names to columns (maybe?)
         String common_part = "ID INTEGER C0 TEXT, C1 TEXT, C2 TEXT," +
@@ -54,13 +54,14 @@ public class MainActivity extends AppCompatActivity {
                 " C8 TEXT, C9 TEXT, C10 TEXT, C11 TEXT, C12 TEXT," +
                 " C13 TEXT, C14 TEXT, C15 TEXT, C16 TEXT, C17 TEXT," +
                 " C18 TEXT, C19 TEXT, C20 TEXT," +
-                "FOREIGN KEY (ID) REFERENCES MAINTABLE (ID))";
+                "FOREIGN KEY (ID) REFERENCES USERS (ID))";
+        SQL_TOOLS =  "CREATE TABLE TOOLS (" + common_part.substring(11, 159) + ")";
+//        TODO: to not have redundant tables
         SQL_T0 = "CREATE TABLE T0 (" + common_part;
         SQL_T1 = "CREATE TABLE T1 (" + common_part;
         SQL_T2 = "CREATE TABLE T2 (" + common_part;
         SQL_T3 = "CREATE TABLE T3 (" + common_part;
         SQL_T4 = "CREATE TABLE T4 (" + common_part;
-        SQL_TOOLS =  "CREATE TABLE TOOLS (" + common_part.substring(11, 159) + ")";
         dbHelper = new TableReaderHelper(context);
 
     }
@@ -69,7 +70,8 @@ public class MainActivity extends AppCompatActivity {
         String login = et_login.getText().toString();
         String pass = et_pass.getText().toString();
         user_id = "0";
-        Intent i = new Intent(this, StepTools.class);
+        sendJSON(this);
+        Intent i = new Intent(this, OrgInfo.class);
         startActivity(i);
 //        SQLiteDatabase database = dbHelper.getReadableDatabase();
 //        Cursor cursor = database.rawQuery("SELECT * FROM MAINTABLE WHERE FULLNAME LIKE '" + login + "'",null);
@@ -143,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
                     for (DataSnapshot data : dataSnapshot.child("users").getChildren()) {
                         user_values.put("ID", id++);
                         user_values.put("FULLNAME", data.getKey());
-                        database.insert("MAINTABLE", null, user_values);
+                        database.insert("USERS", null, user_values);
                     }
                     ContentValues tool_values = new ContentValues();
                     for (DataSnapshot data : dataSnapshot.child("tools").getChildren()) {
@@ -168,4 +170,93 @@ public class MainActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError databaseError) { }
         });
     }
+
+    public static void addJSON(Context context, String key, String val) {
+        FileInputStream fis = null;
+        String res = "{";
+        try {
+
+            fis = context.openFileInput("JSON.txt");
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader br = new BufferedReader(isr);
+            StringBuilder sb = new StringBuilder();
+            String text;
+            while ((text = br.readLine()) != null) {
+                sb.append(text);
+            }
+            res = sb.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (fis != null) {
+                try {
+                    fis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        FileOutputStream fos = null;
+        if (res.length() > 1) res = res + ", ";
+        res = res + "\"" + key + "\" : " + val;
+        try {
+            fos = context.openFileOutput("JSON.txt", MODE_PRIVATE);
+            fos.write(res.getBytes());
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public static void sendJSON(Context context) {
+        FileInputStream fis = null;
+        String res = "{}";
+        try {
+
+            fis = context.openFileInput("JSON.txt");
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader br = new BufferedReader(isr);
+            StringBuilder sb = new StringBuilder();
+            String text;
+            while ((text = br.readLine()) != null) {
+                sb.append(text);
+            }
+            res = sb.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (fis != null) {
+                try {
+                    fis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        db.child("protocols").child(user_id).setValue(res);
+        FileOutputStream fos = null;
+        res = "";
+        try {
+            fos = context.openFileOutput("JSON.txt", MODE_PRIVATE);
+            fos.write(res.getBytes());
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
 }

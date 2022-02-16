@@ -36,6 +36,15 @@
         <activity android:name=".StepConclusion"
             android:parentActivityName=".MainActivity" />
 
+        <activity android:name=".OrgInfo"
+            android:parentActivityName=".MainActivity" />
+
+        <activity android:name=".MethodChoice"
+            android:parentActivityName=".MainActivity" />
+
+        <activity android:name=".DeviceChoice"
+            android:parentActivityName=".MainActivity" />
+
     </application>
 
 </manifest>

@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">Приложение для планшета</string>
+    <string-array name="executors">
+        <item>ООО «НИИПГАЗА»</item>
+        <item>ООО «Энергоэксперт»</item>
+    </string-array>
+    <string-array name="clients">
+        <item>ООО «Газпром трансгаз Казань»</item>
+        <item>ООО ««Газпром трансгаз Югорск»</item>
+    </string-array>
+    <string-array name="devices">
+        <item>Фильтр высокого давления, зав. № F500/1, рег. № 75, инв. № 136033</item>
+    </string-array>
 </resources>
