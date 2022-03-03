@@ -1,5 +1,11 @@
 package com.example.energoplanshet;
 
+import static com.example.energoplanshet.MainActivity.db;
+import static com.example.energoplanshet.MainActivity.getFileContent;
+import static com.example.energoplanshet.MainActivity.setFileContent;
+import static com.example.energoplanshet.MainActivity.user_id;
+
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -14,6 +20,7 @@ import android.widget.Spinner;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -33,6 +40,27 @@ public class OrgInfo extends AppCompatActivity {
         inflateSpinner(spinnerExecutor, "EXECUTORS", R.array.executors);
         inflateSpinner(spinnerClient, "CLIENTS", R.array.clients);
         inflateSpinner(spinnerFIO, "USERS", -1);
+        String json_content = getFileContent(this, "JSON.txt");
+        if (!json_content.isEmpty()) {
+            MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
+            builder.setTitle("Имеются неотправленные исходные данные");
+            builder.setMessage("При переходе на следующее окно они будут удалены. Продолжить?");
+            builder.setPositiveButton("Отправить", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    String res = getFileContent(getApplicationContext(), "JSON.txt");
+                    db.child("protocols").child(user_id).setValue(res);
+                    setFileContent(getApplicationContext(), "JSON.txt", "");
+                }
+            });
+            builder.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.cancel();
+                }
+            });
+            builder.create().show();
+        }
     }
 
     private void inflateSpinner(Spinner spinner, String tableName, int res) {

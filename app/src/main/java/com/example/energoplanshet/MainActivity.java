@@ -2,18 +2,25 @@ package com.example.energoplanshet;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.icu.text.LocaleDisplayNames;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -33,9 +40,10 @@ public class MainActivity extends AppCompatActivity {
 
     static DatabaseReference db;
     EditText et_login, et_pass;
-    static String SQL_USERS, SQL_TOOLS, SQL_T0, SQL_T1, SQL_T2, SQL_T3, SQL_T4;
+    static String SQL_USERS;
     Context context;
     TableReaderHelper dbHelper;
+//    Button send_btn;
     static String user_id;
     static boolean meth1, meth2, meth3, meth4, meth5, meth6;
 
@@ -45,33 +53,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         et_login = findViewById(R.id.login);
         et_pass = findViewById(R.id.pass);
+//        send_btn = findViewById(R.id.send_btn);
         context = getApplicationContext();
         db = FirebaseDatabase.getInstance().getReference();
-        SQL_USERS =  "CREATE TABLE USERS  (ID INTEGER PRIMARY KEY," +
-                "FULLNAME TEXT)";
-//        TODO: give appropriate names to columns (maybe?)
-        String common_part = "ID INTEGER C0 TEXT, C1 TEXT, C2 TEXT," +
-                " C3 TEXT, C4 TEXT, C5 TEXT, C6 TEXT, C7 TEXT," +
-                " C8 TEXT, C9 TEXT, C10 TEXT, C11 TEXT, C12 TEXT," +
-                " C13 TEXT, C14 TEXT, C15 TEXT, C16 TEXT, C17 TEXT," +
-                " C18 TEXT, C19 TEXT, C20 TEXT," +
-                "FOREIGN KEY (ID) REFERENCES USERS (ID))";
-        SQL_TOOLS =  "CREATE TABLE TOOLS (" + common_part.substring(11, 159) + ")";
-//        TODO: to not have redundant tables
-        SQL_T0 = "CREATE TABLE T0 (" + common_part;
-        SQL_T1 = "CREATE TABLE T1 (" + common_part;
-        SQL_T2 = "CREATE TABLE T2 (" + common_part;
-        SQL_T3 = "CREATE TABLE T3 (" + common_part;
-        SQL_T4 = "CREATE TABLE T4 (" + common_part;
+        SQL_USERS =  "CREATE TABLE USERS  (ID INTEGER PRIMARY KEY," + "FULLNAME TEXT)";
         dbHelper = new TableReaderHelper(context);
-
     }
 
     public void enter(View view) {
         String login = et_login.getText().toString();
         String pass = et_pass.getText().toString();
         user_id = "0";
-        sendJSON(this);
         Intent i = new Intent(this, OrgInfo.class);
         startActivity(i);
 //        SQLiteDatabase database = dbHelper.getReadableDatabase();
@@ -87,11 +79,11 @@ public class MainActivity extends AppCompatActivity {
 //        cursor.close();
     }
 
-    public long getAppVersion() {
+    public static String getFileContent(Context context, String filename) {
         FileInputStream fis = null;
-        long res = -1;
+        String res = "";
         try {
-            fis = openFileInput("version.txt");
+            fis = context.openFileInput(filename);
             InputStreamReader isr = new InputStreamReader(fis);
             BufferedReader br = new BufferedReader(isr);
             StringBuilder sb = new StringBuilder();
@@ -99,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
             while ((text = br.readLine()) != null) {
                 sb.append(text);
             }
-            res = Integer.parseInt(sb.toString());
+            res = sb.toString();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -114,11 +106,11 @@ public class MainActivity extends AppCompatActivity {
         return res;
     }
 
-    public void setAppVersion(long remote) {
+    public static void setFileContent(Context context, String filename, String value) {
         FileOutputStream fos = null;
         try {
-            fos = openFileOutput("version.txt", MODE_PRIVATE);
-            fos.write(Long.toString(remote).getBytes());
+            fos = context.openFileOutput(filename, MODE_PRIVATE);
+            fos.write(value.getBytes());
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -130,6 +122,14 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    public long getAppVersion() {
+        return Integer.parseInt(getFileContent(this,"version.txt"));
+    }
+
+    public void setAppVersion(long remote) {
+        setFileContent(this, "version.txt", Long.toString(remote));
     }
 
     public void update(View view) {
@@ -148,21 +148,6 @@ public class MainActivity extends AppCompatActivity {
                         user_values.put("FULLNAME", data.getKey());
                         database.insert("USERS", null, user_values);
                     }
-                    ContentValues tool_values = new ContentValues();
-                    for (DataSnapshot data : dataSnapshot.child("tools").getChildren()) {
-                        JSONObject json = null;
-                        try {
-                            json = new JSONObject(data.getValue().toString());
-                            Log.d("olboeb", json.getString("0"));
-                            for (int i = 0; i < 16; i++) {
-                                String col = Integer.toString(i);
-                                tool_values.put("C" + col, json.getString(col));
-                            }
-                            database.insert("TOOLS", null, tool_values);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
                     setAppVersion(remoteVersion);
                     Toast.makeText(context, "Обновлено", Toast.LENGTH_SHORT).show();
                 }
@@ -173,91 +158,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static void addJSON(Context context, String key, String val) {
-        FileInputStream fis = null;
-        String res = "{";
-        try {
-
-            fis = context.openFileInput("JSON.txt");
-            InputStreamReader isr = new InputStreamReader(fis);
-            BufferedReader br = new BufferedReader(isr);
-            StringBuilder sb = new StringBuilder();
-            String text;
-            while ((text = br.readLine()) != null) {
-                sb.append(text);
-            }
-            res = sb.toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (fis != null) {
-                try {
-                    fis.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        FileOutputStream fos = null;
-        if (res.length() > 1) res = res + ", ";
+        String res = getFileContent(context, "JSON.txt");
+        if (!res.isEmpty()) res = res + ", ";
         res = res + "\"" + key + "\" : " + val;
-        try {
-            fos = context.openFileOutput("JSON.txt", MODE_PRIVATE);
-            fos.write(res.getBytes());
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (fos != null) {
-                try {
-                    fos.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+        setFileContent(context, "JSON.txt", res);
     }
-
-    public static void sendJSON(Context context) {
-        FileInputStream fis = null;
-        String res = "{}";
-        try {
-
-            fis = context.openFileInput("JSON.txt");
-            InputStreamReader isr = new InputStreamReader(fis);
-            BufferedReader br = new BufferedReader(isr);
-            StringBuilder sb = new StringBuilder();
-            String text;
-            while ((text = br.readLine()) != null) {
-                sb.append(text);
-            }
-            res = sb.toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (fis != null) {
-                try {
-                    fis.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        db.child("protocols").child(user_id).setValue(res);
-        FileOutputStream fos = null;
-        res = "";
-        try {
-            fos = context.openFileOutput("JSON.txt", MODE_PRIVATE);
-            fos.write(res.getBytes());
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (fos != null) {
-                try {
-                    fos.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
 }
