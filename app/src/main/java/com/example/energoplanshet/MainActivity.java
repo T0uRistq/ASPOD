@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     Context context;
     TableReaderHelper dbHelper;
     static String user_id;
+    static boolean meth1, meth2, meth3, meth4, meth5, meth6;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

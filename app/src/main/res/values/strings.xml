@@ -9,6 +9,7 @@
         <item>ООО ««Газпром трансгаз Югорск»</item>
     </string-array>
     <string-array name="devices">
-        <item>Фильтр высокого давления, зав. № F500/1, рег. № 75, инв. № 136033</item>
+        <item>Фильтр высокого давления, инв. № 136033</item>
+        <item>Пылеуловитель, инв. № 135783</item>
     </string-array>
 </resources>

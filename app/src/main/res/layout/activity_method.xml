@@ -51,7 +51,7 @@
         android:layout_marginTop="24dp"
         android:layout_marginLeft="32dp"
         android:layout_marginRight="32dp"
-        android:text="по результатам визуального и измерительного контроля элементов и сварных соединений трубопроводной обвязки"
+        android:text="по результатам визуального и измерительного контроля"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/methods_choice" />
@@ -61,7 +61,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:text="по результатам измерения толщины стенки элементов трубопроводной обвязки"
+        android:text="по результатам функциональной диагностики"
         app:layout_constraintEnd_toEndOf="@+id/cb1"
         app:layout_constraintStart_toStartOf="@+id/cb1"
         app:layout_constraintTop_toBottomOf="@+id/cb1" />
@@ -71,7 +71,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:text="по результатам контроля твердости основного металла элементов трубопроводной обвязки"
+        android:text="по результатам ультразвуковой толщинометрии элементов сосуда"
         app:layout_constraintTop_toBottomOf="@+id/cb2"
         app:layout_constraintStart_toStartOf="@+id/cb2"
         app:layout_constraintEnd_toEndOf="@+id/cb2" />
@@ -81,10 +81,30 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:text="по результатам ультразвукового контроля сварных соединений трубопроводной обвязки"
+        android:text="по результатам контроля сварных соединений сосуда ультразвуковым методом"
         app:layout_constraintTop_toBottomOf="@+id/cb3"
         app:layout_constraintStart_toStartOf="@+id/cb3"
         app:layout_constraintEnd_toEndOf="@+id/cb3" />
+
+    <CheckBox
+        android:id="@+id/cb5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="по результатам проведения магнитопорошкового контроля"
+        app:layout_constraintTop_toBottomOf="@+id/cb4"
+        app:layout_constraintStart_toStartOf="@+id/cb4"
+        app:layout_constraintEnd_toEndOf="@+id/cb4" />
+
+    <CheckBox
+        android:id="@+id/cb6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="по результатам контроля методом замера твердости"
+        app:layout_constraintTop_toBottomOf="@+id/cb5"
+        app:layout_constraintStart_toStartOf="@+id/cb5"
+        app:layout_constraintEnd_toEndOf="@+id/cb5" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
