@@ -125,7 +125,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public long getAppVersion() {
-        return Integer.parseInt(getFileContent(this,"version.txt"));
+        int remoteVersion = -1;
+        String version = getFileContent(this,"version.txt");
+        if (version.isEmpty()) {
+            remoteVersion = -1;
+        } else {
+            try {
+                remoteVersion = Integer.parseInt(version);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return remoteVersion;
     }
 
     public void setAppVersion(long remote) {
