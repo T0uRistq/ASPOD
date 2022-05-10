@@ -1,28 +1,20 @@
 package com.example.energoplanshet;
 
-import static com.example.energoplanshet.MainActivity.db;
-import static com.example.energoplanshet.MainActivity.getFileContent;
-import static com.example.energoplanshet.MainActivity.setFileContent;
-import static com.example.energoplanshet.MainActivity.user_id;
-
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.Spinner;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class OrgInfo extends AppCompatActivity {
 
@@ -40,26 +32,19 @@ public class OrgInfo extends AppCompatActivity {
         inflateSpinner(spinnerExecutor, "EXECUTORS", R.array.executors);
         inflateSpinner(spinnerClient, "CLIENTS", R.array.clients);
         inflateSpinner(spinnerFIO, "USERS", -1);
-        String json_content = getFileContent(this, "JSON.txt");
-        if (!json_content.isEmpty()) {
-            MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
-            builder.setTitle("Имеются неотправленные исходные данные");
-            builder.setMessage("При переходе на следующее окно они будут удалены. Продолжить?");
-            builder.setPositiveButton("Отправить", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    String res = getFileContent(getApplicationContext(), "JSON.txt");
-                    db.child("protocols").child(user_id).setValue(res);
-                    setFileContent(getApplicationContext(), "JSON.txt", "");
-                }
-            });
-            builder.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    dialogInterface.cancel();
-                }
-            });
-            builder.create().show();
+        MainActivity.setFileContent(this, "JSON.txt", "");
+        // recover state
+        if (MainActivity.recover_state) {
+            try {
+                spinnerExecutor.setSelection(Integer.parseInt(MainActivity.jsonObject.get("executor").toString()));
+                spinnerClient.setSelection(Integer.parseInt(MainActivity.jsonObject.get("client").toString()));
+                spinnerFIO.setSelection(Integer.parseInt(MainActivity.jsonObject.get("FIO").toString()));
+                spinnerExecutor.setBackgroundColor(0xFFFFFF00);
+                spinnerClient.setBackgroundColor(0xFFFFFF00);
+                spinnerFIO.setBackgroundColor(0xFFFFFF00);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -82,6 +67,7 @@ public class OrgInfo extends AppCompatActivity {
         MainActivity.addJSON(getApplicationContext(), "client", Integer.toString(spinnerClient.getSelectedItemPosition()));
         MainActivity.addJSON(getApplicationContext(), "FIO", Integer.toString(spinnerFIO.getSelectedItemPosition()));
         Intent i = new Intent(this, DeviceChoice.class);
+        finish();
         startActivity(i);
     }
 }

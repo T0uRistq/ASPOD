@@ -2,15 +2,17 @@ package com.example.energoplanshet;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.CalendarView;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import org.json.JSONException;
 
 import java.util.Calendar;
 
@@ -47,6 +49,8 @@ public class MethodChoice extends AppCompatActivity {
                 date.setText(pd.substring(pd.length() - 2) + "." + pm.substring(pm.length() - 2) + "." + year);
             }
         }, year, month, day);
+        // TODO: recover state (don't do it right now, since it is the last step)
+        //  CONSIDER THIS WHEN YOU DECIDE TO IMPLEMENT ELEMENT ADDITION
     }
 
     public void setDate(View view) {
@@ -54,18 +58,14 @@ public class MethodChoice extends AppCompatActivity {
     }
 
     public void toForm(View view) {
-        String val = "[ " + (cb1.isChecked() ? "0, " : "") + (cb2.isChecked() ? "1, " : "") + (cb3.isChecked() ? "2, " : "")
+        String val = "[" + (cb1.isChecked() ? "0, " : "") + (cb2.isChecked() ? "1, " : "") + (cb3.isChecked() ? "2, " : "")
                     + (cb4.isChecked() ? "3, " : "") + (cb5.isChecked() ? "4, " : "") + (cb6.isChecked() ? "5, " : "");
-        MainActivity.meth1 = cb1.isChecked();
-        MainActivity.meth2 = cb2.isChecked();
-        MainActivity.meth3 = cb3.isChecked();
-        MainActivity.meth4 = cb4.isChecked();
-        MainActivity.meth5 = cb5.isChecked();
-        MainActivity.meth6 = cb6.isChecked();
         val = val.substring(0, val.length() - 2) + "]";
         MainActivity.addJSON(this, "methods", val);
         MainActivity.addJSON(this, "date", "\"" + date.getText() + "\"");
-        finishAffinity();
+        finish();
+        Intent i = new Intent(this, MainMenu.class);
+        startActivity(i);
     }
 
 }

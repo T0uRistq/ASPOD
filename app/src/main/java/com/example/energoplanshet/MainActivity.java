@@ -2,32 +2,23 @@ package com.example.energoplanshet;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.DialogFragment;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
-import android.icu.text.LocaleDisplayNames;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -43,9 +34,9 @@ public class MainActivity extends AppCompatActivity {
     static String SQL_USERS;
     Context context;
     TableReaderHelper dbHelper;
-//    Button send_btn;
     static String user_id;
-    static boolean meth1, meth2, meth3, meth4, meth5, meth6;
+    static Boolean recover_state = false;
+    static JSONObject jsonObject = null;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         et_login = findViewById(R.id.login);
         et_pass = findViewById(R.id.pass);
-//        send_btn = findViewById(R.id.send_btn);
         context = getApplicationContext();
         db = FirebaseDatabase.getInstance().getReference();
         SQL_USERS =  "CREATE TABLE USERS  (ID INTEGER PRIMARY KEY," + "FULLNAME TEXT)";
@@ -64,14 +54,13 @@ public class MainActivity extends AppCompatActivity {
         String login = et_login.getText().toString();
         String pass = et_pass.getText().toString();
         user_id = "0";
-        Intent i = new Intent(this, OrgInfo.class);
+        Intent i = new Intent(this, MainMenu.class);
         startActivity(i);
 //        SQLiteDatabase database = dbHelper.getReadableDatabase();
 //        Cursor cursor = database.rawQuery("SELECT * FROM MAINTABLE WHERE FULLNAME LIKE '" + login + "'",null);
 //        if (cursor.moveToFirst()) {
 //            user_id = cursor.getString(0);
-//            Log.d("olboeb", user_id);
-//            Intent i = new Intent(this,BuildDoc.class);
+//            Intent i = new Intent(this, BuildDoc.class);
 //            startActivity(i);
 //        } else {
 //            Toast.makeText(this,"Неверный логин или пароль",Toast.LENGTH_LONG).show();
@@ -160,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
     public static void addJSON(Context context, String key, String val) {
         String res = getFileContent(context, "JSON.txt");
         if (!res.isEmpty()) res = res + ", ";
-        res = res + "\"" + key + "\" : " + val;
+        res = res + "\"" + key + "\": " + val;
         setFileContent(context, "JSON.txt", res);
     }
 }
