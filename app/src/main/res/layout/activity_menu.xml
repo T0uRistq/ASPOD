@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent" >
 
     <Button
         android:id="@+id/send_report"
@@ -11,12 +11,12 @@
         android:onClick="sendReport"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="96dp"
         android:text="Отправить отчет"
-        android:gravity="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintBottom_toTopOf="@id/continue_report"/>
 
     <Button
         android:id="@+id/continue_report"
@@ -28,15 +28,18 @@
         android:layout_marginTop="96dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/send_report" />
+        app:layout_constraintTop_toBottomOf="@+id/send_report"
+        app:layout_constraintBottom_toTopOf="@id/start_report"/>
 
     <Button
         android:id="@+id/start_report"
-        android:onClick="startReport"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Новый отчет"
         android:layout_marginTop="96dp"
+        android:layout_marginBottom="96dp"
+        android:onClick="startReport"
+        android:text="Новый отчет"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/continue_report" />

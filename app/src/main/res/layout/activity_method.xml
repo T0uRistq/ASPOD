@@ -49,8 +49,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:text="по результатам визуального и измерительного контроля"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="16dp"
+        android:text="визуального и измерительного контроля"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/methods_choice" />
 
@@ -59,9 +59,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:text="по результатам функциональной диагностики"
+        android:layout_marginStart="16dp"
+        android:text="функциональной диагностики"
         app:layout_constraintTop_toBottomOf="@+id/cb1"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <CheckBox
@@ -69,19 +69,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:text="по результатам ультразвуковой толщинометрии элементов сосуда"
+        android:layout_marginStart="16dp"
+        android:text="ультразвуковой толщинометрии элементов сосуда"
         app:layout_constraintTop_toBottomOf="@+id/cb2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"/>
 
     <CheckBox
         android:id="@+id/cb4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:text="по результатам контроля сварных соединений сосуда ультразвуковым методом"
+        android:layout_marginStart="16dp"
+        android:text="контроля сварных соединений сосуда ультразвуковым методом"
         app:layout_constraintTop_toBottomOf="@+id/cb3"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <CheckBox
@@ -89,9 +89,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:text="по результатам проведения магнитопорошкового контроля"
+        android:layout_marginStart="16dp"
+        android:text="проведения магнитопорошкового контроля"
         app:layout_constraintTop_toBottomOf="@+id/cb4"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <CheckBox
@@ -99,9 +99,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
+        android:layout_marginStart="16dp"
         android:text="по результатам контроля методом замера твердости"
         app:layout_constraintTop_toBottomOf="@+id/cb5"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
 
