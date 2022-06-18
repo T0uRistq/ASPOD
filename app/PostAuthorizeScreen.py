@@ -1,13 +1,11 @@
 import json
-
+from traceback import print_tb
 import pyrebase
+import sqlite3
 from PyQt5.QtWidgets import QMainWindow, QMessageBox
 from PyQt5.QtGui import QPixmap,QIcon
 from Ui_PostAuthorize import Ui_MainWindow
-from jsonadd import addToJson
-import sqlite3
-
-from secondScreen import SecondScreen
+import secondScreen
 
 executors = [{'executor': 'ООО «НИИПГАЗА»',
               'postal': '450059, Россия, Республика Башкортостан, г. Уфа, проспект Октября, дом 43/5, офис Б',
@@ -28,23 +26,19 @@ firebaseconfig = {'apiKey': "AIzaSyDQeQ_YV0ZVeLW--dzDt6XntEwcCEGwTrg",
 
 fireBaseApp = pyrebase.initialize_app(firebaseconfig)
 database = fireBaseApp.database()
-
+report_continued = False
 
 class PostAuthorizeScreen(Ui_MainWindow):
-    # Own methods
-    # def __init__(self):
-    fileContent = str()
 
     def initEventListeners(self):
-        print("zero")
         self.newReport.clicked.connect(self.generateNewReport)
-        file = open("data/JSONstring.txt", "w+")
+        file = open("data/JSONstring.txt", "r+")
         fileContent = file.read()
-        fileJson=dict()
+        fileJson = dict()
         try:
             fileJson = json.loads(fileContent)
         except Exception:
-            print("first")
+            print (fileContent + " is bad")
             messageBox = QMessageBox()
             messageBox.setIcon(QMessageBox.Warning)
             messageBox.setWindowTitle("Отправка файла")
@@ -52,7 +46,7 @@ class PostAuthorizeScreen(Ui_MainWindow):
             messageBox.setStandardButtons(QMessageBox.Ok)
             messageBox.exec_()
             return
-        print(fileJson)
+
         if "date" in fileJson:
             messageBox = QMessageBox()
             messageBox.setIcon(QMessageBox.Information)
@@ -65,11 +59,14 @@ class PostAuthorizeScreen(Ui_MainWindow):
         elif len(fileContent) > 0:
             self.continueButton.setEnabled(True)
         self.reportSendButton.clicked.connect(lambda: self.sendReport(fileContent))
+        self.continueButton.clicked.connect(lambda: self.continueReport())
+        file.close()
 
-    def sendReport(self,file):
+    def sendReport(self, fileContent):
         try:
             # Отправка протокола
-            database.child("protocols").child("1").set(file)
+            db_child_key = len(database.child('protocols').get().val())
+            database.child("protocols").child(db_child_key).set(fileContent)
             messageBox = QMessageBox()
             icon = QIcon("imgs/checked.png")
             messageBox.setIconPixmap(icon.pixmap(60,60))
@@ -84,21 +81,20 @@ class PostAuthorizeScreen(Ui_MainWindow):
             messageBox.setText("Произошла какая-то ошибка при отправке файла")
             messageBox.setStandardButtons(QMessageBox.Ok)
             messageBox.exec_()
-    def continueReport(self):
-        return
-
-    # def nextScreen(self):
-    #     global jsonstring
-    #     jsonstring = {"executor": self.comboBox.currentIndex(),"client": self.comboBox_2.currentIndex(),"FIO": self.comboBox_3.currentIndex()}
-    #     self.chooseMethods = QMainWindow()
-    #     self.chooseMethodsUi = ThirdScreen()
-    #     self.chooseMethodsUi.setupUi(self.chooseMethods)
-    #     self.chooseMethodsUi.initEventListeners()
-    #     self.chooseMethods.show()
+        file = open("data/JSONstring.txt", "w")
+        file.close()
 
     def generateNewReport(self):
+        if not report_continued:
+            file = open('data/JSONstring.txt', 'w')
+            file.close()
         self.chooseExecutors = QMainWindow()
-        self.chooseExecutorsUi = SecondScreen()
+        self.chooseExecutorsUi = secondScreen.SecondScreen()
         self.chooseExecutorsUi.setupUi(self.chooseExecutors)
         self.chooseExecutorsUi.initEventListeners()
         self.chooseExecutors.show()
+            
+    def continueReport(self):
+        global report_continued
+        report_continued = True
+        self.generateNewReport()

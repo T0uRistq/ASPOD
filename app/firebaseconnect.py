@@ -5,6 +5,7 @@ import sqlite3
 from secondScreen import SecondScreen
 from PostAuthorizeScreen import PostAuthorizeScreen
 from Ui_AuthWindow import Ui_MainWindow
+
 firebaseconfig = {'apiKey': "AIzaSyDQeQ_YV0ZVeLW--dzDt6XntEwcCEGwTrg",
                   'authDomain': "energotemp-9b8c9.firebaseapp.com",
                   'databaseURL': "https://energotemp-9b8c9-default-rtdb.europe-west1.firebasedatabase.app",
@@ -14,6 +15,7 @@ firebaseconfig = {'apiKey': "AIzaSyDQeQ_YV0ZVeLW--dzDt6XntEwcCEGwTrg",
                   'appId': "1:622369709896:web:5b1121856ffdff3a4e9d7d"}
 fireBaseApp= pyrebase.initialize_app(firebaseconfig)
 database = fireBaseApp.database()
+
 class AuthWindow (Ui_MainWindow):
     # Own methods
     def authorize(self, login):
@@ -54,7 +56,7 @@ class AuthWindow (Ui_MainWindow):
         print(allUsers)
         # Временно
         cur.execute("DROP TABLE IF EXISTS USERSTABLE")
-        cur.execute("CREATE TABLE USERSTABLE (id INTEGER PRIMARY KEY , user TEXT, password TEXT);")
+        cur.execute("CREATE TABLE USERSTABLE (id INTEGER PRIMARY KEY , user TEXT, pass_hash TEXT);")
         for i in range(len(allUsers.val())):
             cur.execute(f"INSERT INTO USERSTABLE VALUES ('{i}','{allUsers[i].key()}','string')")
         con.commit()

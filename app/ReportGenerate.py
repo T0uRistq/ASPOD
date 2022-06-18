@@ -1,24 +1,17 @@
-import ast
-import time
 import pyrebase
 import os
-from PyQt5.QtGui import QIcon
-
-from PyQt5.QtWidgets import QMainWindow, QListWidgetItem, QMessageBox, QFileDialog
-
 import threading
-
-from PyQt5 import QtCore, QtWidgets
-
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QListWidgetItem, QMessageBox, QFileDialog
+from PyQt5 import QtCore
 from BuildDocClass import BuildDoc
+from Ui_ServerForm import Ui_MainWindow
 
 executors = [{'executor' : 'ООО «НИИПГАЗА»', 'postal' : '450059, Россия, Республика Башкортостан, г. Уфа, проспект Октября, дом 43/5, офис Б',
                           'cert' : '№ ЛНК-053А0002 от 02.03.2021 г'},
         {'executor' : 'ООО «Энергоэксперт»', 'postal' : '197342, г. Санкт-Петербург, наб. Черной речки, д.41, к.2, лит. Б, пом.7',
                           'cert' : '№ 89А112162 от 14.02.2020 г.'}]
-clients = [{'client' : 'ООО «Газпром трансгаз Казань»', 'postal' : '450059, Россия, Республика Башкортостан, г. Уфа, проспект Октября, дом 43/5, офис Б'},
-        {'client' : 'ООО «Газпром трансгаз Югорск»', 'postal' : '628260, РФ, г. Югорск, ул. Мира, 15'}]
-from Ui_ServerForm import Ui_MainWindow
+
 firebaseconfig = {'apiKey': "AIzaSyDQeQ_YV0ZVeLW--dzDt6XntEwcCEGwTrg",
                   'authDomain': "energotemp-9b8c9.firebaseapp.com",
                   'databaseURL': "https://energotemp-9b8c9-default-rtdb.europe-west1.firebasedatabase.app",
@@ -27,8 +20,18 @@ firebaseconfig = {'apiKey': "AIzaSyDQeQ_YV0ZVeLW--dzDt6XntEwcCEGwTrg",
                   'messagingSenderId': "622369709896",
                   'appId': "1:622369709896:web:5b1121856ffdff3a4e9d7d"}
 
+
+## TODO: hardcode dlya otobrazheniya inventranogo nomera
+clients = [{'client' : 'ООО «Газпром трансгаз Казань»', 'postal' : '450059, Россия, Республика Башкортостан, г. Уфа, проспект Октября, дом 43/5, офис Б'},
+    {'client' : 'ООО «Газпром трансгаз Югорск»', 'postal' : '628260, РФ, г. Югорск, ул. Мира, 15'}]
+
+devices = [{'obj_name' : 'Фильтр высокого давления, зав. № F500/1, рег. № 75', 'number' : '136033', 'obj_location' : 'Приозёрное ЛПУМГ, КЦ – 1МГ «Уренгой - Ужгород»', 'concl_num' : '№ ТО-ЭЭ-СРД-0322.08-2021', 'org' : 1},
+      {'obj_name' : 'Пылеуловитель зав. № 46301, рег. № 727', 'number' : '135783', 'obj_location' : 'Правохеттинское ЛПУМГ, КЦ – 4МГ «Ямбург – Елец 1»', 'concl_num' : '№ ТО-ЭЭ-СРД-0324.08-2021', 'org' : 1}]
+
+
 fireBaseApp= pyrebase.initialize_app(firebaseconfig)
-database = fireBaseApp.database()
+db = fireBaseApp.database()
+
 class ReportGenerate(QtCore.QObject, Ui_MainWindow):
     fileName = str()
     finished = QtCore.pyqtSignal()
@@ -64,17 +67,19 @@ class ReportGenerate(QtCore.QObject, Ui_MainWindow):
             self.fileName = QFileDialog.getSaveFileName(None, "Сохранить протокол как", os.path.expanduser('~/Documents/Protocol.docx'), "*.docx \n *.doc")[0]
             self.generateReportThread = threading.Thread(target=self.generateReport, daemon=True)
             self.generateReportThread.start()
-        else self.finished.emit()
+        else:
+            self.finished.emit()
 
     def getListOfReports(self):
         self.listWidget.clear()
-        data = database.child("protocols").get().val()
+        data = db.child("protocols").get().val()
         for item in data:
-            dictionary = ast.literal_eval(item)
-            item = QListWidgetItem()
-            item.setIcon(QIcon('.\imgs\word.png'))
-            item.setText(dictionary['date'])
-            self.listWidget.addItem(item)
+            dictionary = eval(item)
+            ListWidgetItem = QListWidgetItem()
+            ListWidgetItem.setIcon(QIcon('.\imgs\word.png'))
+            name = db.child('users').get()[dictionary['FIO']].key().split()
+            ListWidgetItem.setText("инв. № " + str(devices[dictionary['device']]['number']) + ', ' + name[0] + ' ' + name[1][0] + '.' + name[2][0] + '.')
+            self.listWidget.addItem(ListWidgetItem)
         self.pushButton.setEnabled(True)
 
     def generateReport(self):
